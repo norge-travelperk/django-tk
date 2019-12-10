@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from api.models.recipe import Recipe
+from api.models import Recipe
 
 
 class ModelTest(TestCase):
