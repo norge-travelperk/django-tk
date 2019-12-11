@@ -44,6 +44,8 @@ class RecipeApiTest(TestCase):
     def test_retrieve_recipe(self):
         sample_recipe(name="Cheese")
         sample_recipe(name="Pasta")
+        sample_recipe(name="Frijoles")
+        sample_recipe(name="Costa")
 
         res = self.client.get(RECIPES_URL)
 
@@ -51,6 +53,8 @@ class RecipeApiTest(TestCase):
         serializer = RecipeSerializer(recipes, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+        print(res.data)
+        self.assertEqual(len(res.data), 4)
 
     def test_create_basic_recipe(self):
         """Test creating a recipe"""
