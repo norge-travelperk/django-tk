@@ -53,7 +53,6 @@ class RecipeApiTest(TestCase):
         serializer = RecipeSerializer(recipes, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
-        print(res.data)
         self.assertEqual(len(res.data), 4)
 
     def test_create_basic_recipe(self):
@@ -68,8 +67,7 @@ class RecipeApiTest(TestCase):
             ],
         }
 
-        res = self.client.post(RECIPES_URL, json.dumps(
-            payload), content_type="application/json")
+        res = self.client.post(RECIPES_URL, payload, format='json')
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         recipe = Recipe.objects.get(id=res.data['id'])
@@ -108,8 +106,7 @@ class RecipeApiTest(TestCase):
         payload = {
             'name': 'Pasta'
         }
-        res = self.client.patch(url, json.dumps(
-            payload), content_type="application/json")
+        res = self.client.patch(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         recipe.refresh_from_db()
         self.assertEqual(recipe.name, payload['name'])
