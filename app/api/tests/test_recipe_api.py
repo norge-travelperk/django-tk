@@ -71,12 +71,13 @@ class RecipeApiTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         recipe = Recipe.objects.get(id=res.data['id'])
-        ingredients = recipe.ingredients.all()
+        ingredients = recipe.ingredients.values('name')
+
         self.assertEqual(recipe.name, payload['name'])
         self.assertEqual(recipe.description, payload['description'])
         self.assertEqual(len(ingredients), 3)
         for i in range(3):
-            self.assertEqual(ingredients[i].name, payload.ingredients[i])
+            self.assertIn(payload['ingredients'][i], ingredients)
 
     def test_view_recipe_detail(self):
         recipe = sample_recipe()
@@ -94,14 +95,16 @@ class RecipeApiTest(TestCase):
         self.assertFalse(exist)
 
     def test_filter_recipes_by_name(self):
-        sample_recipe(name="Cheese")
-        sample_recipe(name="Pasta")
-        sample_recipe(name="Mustard")
+        cheese = sample_recipe(name="Cheese")
+        pasta = sample_recipe(name="Pasta")
+        mustard = sample_recipe(name="Mustard")
         res = self.client.get(list_url_params(name="a"))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 2)
-        for value in res.data:
-            self.assertTrue("a" in value['name'])
+        ids = [item['id'] for item in res.data]
+        self.assertIn(pasta.id, ids)
+        self.assertIn(mustard.id, ids)
+        self.assertNotIn(cheese.id, ids)
 
     def test_patch_name_on_recipes(self):
         recipe = sample_recipe(name="Cheese")
