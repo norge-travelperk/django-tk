@@ -23,9 +23,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         ingredients_data = validated_data.pop('ingredients', None)
 
-        for attr, value in validated_data.items():
-            if value:
-                setattr(instance, attr, value)
+        super().update(instance, validated_data)
 
         if ingredients_data:
             instance.ingredients.all().delete()
@@ -33,5 +31,5 @@ class RecipeSerializer(serializers.ModelSerializer):
                 Ingredient.objects.create(recipe=instance, **ingredient_data)
 
         instance.save()
-        instance.refresh_from_db()
+
         return instance
