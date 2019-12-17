@@ -71,9 +71,12 @@ class RecipeApiTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         recipe = Recipe.objects.get(id=res.data['id'])
+        ingredients = recipe.ingredients.all()
         self.assertEqual(recipe.name, payload['name'])
         self.assertEqual(recipe.description, payload['description'])
-        self.assertEqual(len(recipe.ingredients.all()), 3)
+        self.assertEqual(len(ingredients), 3)
+        for i in range(3):
+            self.assertEqual(ingredients[i].name, payload.ingredients[i])
 
     def test_view_recipe_detail(self):
         recipe = sample_recipe()
